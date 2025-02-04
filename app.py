@@ -1,18 +1,21 @@
-from flask import Flask, request, jsonify, render_template
-from models.chatbot import Chatbot
+import os
+import dotenv
+import streamlit as st
+from chatbot import ChatBot
 
-app = Flask(__name__)
-chatbot = Chatbot()
+# Load environment variables
+dotenv.load_dotenv()
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+# Initialize chatbot
+chatbot = ChatBot()
 
-@app.route('/chat', methods=['POST'])
-def chat():
-    user_input = request.json.get('message')
-    response = chatbot.get_response(user_input)
-    return jsonify({'response': response})
+# Streamlit UI
+st.title("LUMS Handbook ChatBot")
+user_input = st.text_input("Ask a question:")
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if st.button("Submit"):
+    if user_input:
+        response = chatbot.answer_question(user_input)
+        st.write(response)
+    else:
+        st.write("Please enter a question.")
